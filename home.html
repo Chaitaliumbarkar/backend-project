@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Academy Home</title>
+    <style>
+        body{ margin:0; font-family:Arial; }
+        .navbar{ background:#1e3a8a; padding:15px 40px; color:white; display:flex; justify-content:space-between; align-items:center; }
+        .navbar a{ color:white; margin-left:20px; text-decoration:none; font-size:18px; }
+        .banner{ background:url('https://images.pexels.com/photos/3183186/pexels-photo-3183186.jpeg') center/cover; height:350px; display:flex; justify-content:center; align-items:center; color:white; text-shadow:2px 2px 8px black; font-size:40px; font-weight:bold; }
+        section{ padding:50px; text-align:center; }
+        .courses{ display:flex; justify-content:center; gap:20px; }
+        .course-card{ width:250px; background:white; padding:20px; border-radius:10px; box-shadow:0 0 10px #ddd; }
+        footer{ background:#1e3a8a; color:white; padding:20px; text-align:center; margin-top:40px; }
+
+        /* Profile */
+        .profile-container{ position:relative; display:flex; align-items:center; gap:10px; cursor:pointer; }
+        .profile-circle{ width:40px; height:40px; border-radius:50%; background:#f0f0f0; color:#1e3a8a; display:flex; justify-content:center; align-items:center; font-weight:bold; font-size:18px; text-transform:uppercase; box-shadow:0 2px 6px rgba(0,0,0,0.2); transition:all 0.3s; }
+        .profile-circle:hover{ transform:scale(1.1); }
+        .profile-dropdown{ position:absolute; top:50px; right:0; background:white; color:black; border-radius:8px; box-shadow:0 5px 15px rgba(0,0,0,0.3); display:none; flex-direction:column; min-width:200px; overflow:hidden; z-index:1000; animation:fadeIn 0.3s ease; }
+        .profile-dropdown div{ padding:10px 15px; border-bottom:1px solid #eee; }
+        .profile-dropdown div:last-child{ border-bottom:none; }
+        .profile-dropdown a{ padding:10px 15px; text-decoration:none; color:black; font-size:16px; transition:0.2s; display:block; }
+        .profile-dropdown a:hover{ background:#f0f0f0; }
+        @keyframes fadeIn{ from{opacity:0; transform:translateY(-10px);} to{opacity:1; transform:translateY(0);} }
+    </style>
+</head>
+<body>
+
+<!-- Navbar -->
+<div class="navbar">
+    <div><b>✨ Success Academy</b></div>
+    <div style="display:flex;align-items:center;gap:20px;">
+        <a href="#courses">Courses</a>
+        <a href="#about">About</a>
+        <a href="#contact">Contact</a>
+
+        <!-- Profile -->
+<div class="profile-container" id="profileContainer">
+    <div id="profileCircle" class="profile-circle"></div>
+    <div class="profile-dropdown" id="profileDropdown">
+        <!-- User info section -->
+        <div style="padding:15px; background:#f8f8f8;">
+            <div id="fullName" style="font-weight:bold; font-size:16px; text-align: center;"></div>
+            <div id="userEmail" style="font-size:14px; color:#555; "></div>
+        </div>
+        <!-- Logout button section -->
+        <div>
+            <a href="#" id="logoutBtn" style="color:#d33; text-align: center;">Logout</a>
+        </div>
+    </div>
+</div>
+
+    </div>
+</div>
+
+<!-- Banner -->
+<div class="banner">Welcome to Success Academy</div>
+
+<!-- Courses -->
+<section id="courses">
+    <h2>Our Popular Courses</h2>
+    <div class="courses">
+        <div class="course-card">
+            <h3>Full Stack Development</h3>
+            <p>Learn MERN, Node, React & Projects</p>
+        </div>
+        <div class="course-card">
+            <h3>Python + AI</h3>
+            <p>Start coding with AI automation</p>
+        </div>
+        <div class="course-card">
+            <h3>Digital Marketing</h3>
+            <p>Become a certified marketer</p>
+        </div>
+    </div>
+</section>
+
+<!-- About -->
+<section id="about">
+    <h2>About Our Academy</h2>
+    <p>We help students build skills and achieve career success through quality education.</p>
+</section>
+
+<!-- Contact -->
+<section id="contact">
+    <h2>Contact Us</h2>
+    <p>Email: contact@successacademy.com</p>
+    <p>Phone: +91 9876543210</p>
+</section>
+
+<!-- Footer -->
+<footer>© 2025 Success Academy | All Rights Reserved</footer>
+
+<script>
+// Load profile info
+async function loadProfile(){
+    const token = localStorage.getItem("token");
+    if(!token){ window.location.href="index.html"; return; }
+
+    const res = await fetch("http://localhost:5000/me", {
+        headers:{ "Authorization": `Bearer ${token}` }
+    });
+    const data = await res.json();
+    if(!data.success){ window.location.href="index.html"; return; }
+
+    const user = data.user;
+
+    // Set first letter in profile circle
+    const circle = document.getElementById("profileCircle");
+    if(user.photo && user.photo!==""){
+        circle.style.backgroundImage = `url(${user.photo})`;
+        circle.style.backgroundSize = "cover";
+        circle.innerText = "";
+    }else{
+        circle.style.background="#f0f0f0";
+        circle.style.color="#1e3a8a";
+        circle.innerText = user.name.charAt(0).toUpperCase();
+    }
+
+    // Set dropdown data
+    document.getElementById("fullName").innerText = user.name;
+    document.getElementById("userEmail").innerText = user.email;
+}
+
+// Dropdown toggle
+const profileContainer=document.getElementById("profileContainer");
+const profileDropdown=document.getElementById("profileDropdown");
+profileContainer.addEventListener("click",()=>{ 
+    profileDropdown.style.display = profileDropdown.style.display==="flex" ? "none":"flex"; 
+});
+
+// Logout
+document.getElementById("logoutBtn").addEventListener("click",()=>{
+    localStorage.removeItem("token");
+    window.location.href="index.html";
+});
+
+loadProfile();
+</script>
+
+</body>
+</html>

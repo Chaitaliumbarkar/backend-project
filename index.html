@@ -1,0 +1,230 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Register & Login | Success Academy</title>
+<link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+* { margin:0; padding:0; box-sizing:border-box; font-family:'Roboto',sans-serif; }
+body {
+  height: 100vh;
+  display: flex;
+  flex-direction: row;
+  background: linear-gradient(-45deg,#6a11cb,#2575fc,#f0e260,#e1763d);
+  background-size:400% 400%;
+  animation: gradientBG 15s ease infinite;
+}
+@keyframes gradientBG {
+  0% {background-position:0% 50%;}
+  50% {background-position:100% 50%;}
+  100% {background-position:0% 50%;}
+}
+.left {
+  width:50%;
+  display:flex;
+  justify-content:center;
+  align-items:center;
+  background:url('https://images.pexels.com/photos/3184632/pexels-photo-3184632.jpeg') center/cover no-repeat;
+  text-align:center;
+  color:white;
+  text-shadow:2px 2px 15px rgba(0,0,0,0.7);
+  font-size:40px;
+  font-weight:700;
+  padding:20px;
+}
+.right {
+  width:50%;
+  display:flex;
+  justify-content:center;
+  align-items:center;
+  padding:40px 20px;
+}
+.form-box {
+  position:relative;
+  width:350px;
+  padding:40px;
+  border-radius:20px;
+  background:rgba(255,255,255,0.1);
+  backdrop-filter: blur(12px);
+  box-shadow:0 8px 32px rgba(0,0,0,0.25);
+  transition: transform 0.3s, box-shadow 0.3s;
+}
+.form-box:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 15px 35px rgba(0,0,0,0.35);
+}
+h2 {
+  text-align:center;
+  color:#fff;
+  margin-bottom:30px;
+  font-size:28px;
+  letter-spacing:1px;
+}
+.input-group {
+  position:relative;
+  margin-bottom:25px;
+}
+.form-box input {
+  width:100%;
+  padding:14px 12px;
+  border:none;
+  border-radius:10px;
+  background:rgba(255,255,255,0.15);
+  color:#fff;
+  font-size:16px;
+  outline:none;
+  transition: all 0.3s;
+}
+.form-box input:focus {
+  background:rgba(255,255,255,0.25);
+  box-shadow:0 0 8px rgba(255,255,255,0.6);
+}
+.form-box input::placeholder { color:#fff; }
+.form-box label {
+  position:absolute;
+  top:50%;
+  left:12px;
+  transform:translateY(-50%);
+  color:#fff;
+  font-size:16px;
+  pointer-events:none;
+  transition:0.3s ease all;
+}
+.form-box input:focus + label,
+.form-box input:not(:placeholder-shown) + label {
+  top:-10px;
+  font-size:13px;
+}
+button {
+  width:100%;
+  padding:14px;
+  margin-top:10px;
+  background:linear-gradient(90deg,#1187cb);
+  color:#fff;
+  border:none;
+  border-radius:12px;
+  font-size:18px;
+  font-weight:600;
+  cursor:pointer;
+  transition: all 0.3s ease;
+}
+button:hover {
+  transform: scale(1.05);
+  opacity:0.9;
+}
+.switch {
+  text-align:center;
+  margin-top:20px;
+  font-size:14px;
+  color:#e0e0e0;
+}
+.switch a {
+  color:#fff;
+  font-weight:600;
+  cursor:pointer;
+  text-decoration:none;
+  transition: color 0.3s;
+}
+.switch a:hover { color:#ffd700; }
+.hidden { display:none; }
+@media (max-width:900px) {
+  body { flex-direction:column; }
+  .left, .right { width:100%; height:50vh; }
+  .form-box { width:90%; }
+}
+</style>
+</head>
+<body>
+
+<div class="left">Success Academy</div>
+
+<div class="right">
+  <!-- Registration Form -->
+  <div id="registerForm" class="form-box">
+    <h2>Create Account</h2>
+    <div class="input-group">
+      <input id="rname" placeholder=" " required>
+      <label>Full Name</label>
+    </div>
+    <div class="input-group">
+      <input id="remail" placeholder=" " required>
+      <label>Email</label>
+    </div>
+    <div class="input-group">
+      <input id="rpass" type="password" placeholder=" " required>
+      <label>Password</label>
+    </div>
+    <button onclick="register()">Register</button>
+    <div class="switch">
+      Already have an account? <a onclick="showLogin()">Login</a>
+    </div>
+  </div>
+
+  <!-- Login Form -->
+  <div id="loginForm" class="form-box hidden">
+    <h2>Welcome Back</h2>
+    <div class="input-group">
+      <input id="lemail" placeholder=" " required>
+      <label>Email</label>
+    </div>
+    <div class="input-group">
+      <input id="lpass" type="password" placeholder=" " required>
+      <label>Password</label>
+    </div>
+    <button onclick="login()">Login</button>
+    <div class="switch">
+      New user? <a onclick="showRegister()">Register</a>
+    </div>
+  </div>
+</div>
+
+<script>
+function showLogin() {
+  document.getElementById("registerForm").classList.add("hidden");
+  document.getElementById("loginForm").classList.remove("hidden");
+}
+function showRegister() {
+  document.getElementById("loginForm").classList.add("hidden");
+  document.getElementById("registerForm").classList.remove("hidden");
+}
+
+// REGISTER
+async function register() {
+  const name = rname.value.trim();
+  const email = remail.value.trim();
+  const password = rpass.value.trim();
+  if(!name || !email || !password){ alert("Fill all fields!"); return; }
+  const res = await fetch("http://localhost:5000/register", {
+    method:"POST",
+    headers:{ "Content-Type":"application/json" },
+    body: JSON.stringify({name,email,password})
+  });
+  const data = await res.json();
+  alert(data.message);
+}
+
+// LOGIN
+async function login() {
+  const email = lemail.value.trim();
+  const password = lpass.value.trim();
+  if(!email || !password){ alert("Fill all fields!"); return; }
+
+  const res = await fetch("http://localhost:5000/login", {
+    method:"POST",
+    headers:{ "Content-Type":"application/json" },
+    body: JSON.stringify({email,password})
+  });
+  const data = await res.json();
+
+  if(data.message === "User not found"){ alert("Register first!"); showRegister(); return; }
+  if(data.message === "Incorrect password"){ alert("Wrong password!"); return; }
+
+  // SAVE TOKEN
+  localStorage.setItem("token", data.token);
+  window.location.href = "home.html";
+}
+</script>
+
+</body>
+</html>
